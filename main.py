@@ -1,6 +1,6 @@
-from controllers.board_controller import BoardController
-from models.move                  import Move
-from models.board                 import Board
+"""Inicio da aplicacao."""
 
-controller = BoardController()
-controller.init_game()
+from controllers.board_controller import BoardController
+
+CONTROLLER = BoardController()
+CONTROLLER.init_game()
