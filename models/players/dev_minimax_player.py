@@ -2,7 +2,7 @@ from apoio.minimax_node import Node
 from apoio.minimax_tree import Tree
 from apoio.regions import Regions
 
-MAX_DEPTH = 2
+MAX_DEPTH = 7
 REGIONS = Regions()
 NEXT_NODE = None
 
@@ -19,8 +19,10 @@ class MinimaxPlayer:
         minimax_tree = self.build_minimax_tree(root_node, board)
         tree_depth = minimax_tree.depth
         print 'tree depth: ' + str(tree_depth)
-        minimax = self.minimax(root_node, tree_depth, True)
-        print 'minimax value: ' + str(minimax)
+        minimax_value = self.minimax(root_node, tree_depth, True)
+        next_move = root_node.get_child_with_value(minimax_value)
+        # print 'minimax value: ' + str(minimax)
+        return next_move.move
         if isinstance(minimax, Node):
             return minimax.move
         return valid_moves[0]
@@ -86,17 +88,19 @@ class MinimaxPlayer:
             NEXT_NODE = node.children[0]
             for child in node.children:
                 value = MinimaxPlayer.minimax(child, depth-1, False)
-                if value > best_value:
-                    NEXT_NODE = child
-                # best_value = max(best_value, value)
-            if depth is MAX_DEPTH+1:
-                return NEXT_NODE
-            return best_value
+                # if value > best_value:
+                #     NEXT_NODE = child
+                best_value = max(best_value, value)
+                child.set_value(best_value)
+            # if depth is MAX_DEPTH+1:
+            #     return NEXT_NODE
+                return best_value
         else:   # isMin
             best_value = float('inf')
             for child in node.children:
                 value = MinimaxPlayer.minimax(child, depth-1, True)
                 best_value = min(best_value, value)
+                child.set_value(best_value)
                 return best_value
 
     @staticmethod
