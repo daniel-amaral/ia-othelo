@@ -2,7 +2,7 @@ from apoio.minimax_node import Node
 from apoio.minimax_tree import Tree
 from apoio.regions import Regions
 
-MAX_DEPTH = 3
+MAX_DEPTH = 4
 REGIONS = Regions()
 NEXT_NODE = None
 
@@ -14,19 +14,45 @@ class MinimaxPlayer:
 
     def play(self, board):
         root_node = Node(None, board, None)
-        valid_moves = list(set(board.valid_moves(self.color)))
-        print '#valid moves: ' + str(len(valid_moves))
-        minimax_tree = self.build_minimax_tree(root_node, board)
-        tree_depth = minimax_tree.depth
-        print 'tree depth: ' + str(tree_depth)
-        minimax_value = self.minimax(root_node, tree_depth, True)
-        next_move = root_node.get_child_with_value(minimax_value)
-        # print 'minimax value: ' + str(minimax)
+        value = self.alphabeta(root_node, MAX_DEPTH, -float("inf"), float("inf"), 1, board, self.color)
+        next_move = root_node.get_child_with_value(value)
         return next_move.move
-        if isinstance(minimax, Node):
-            return minimax.move
-        return valid_moves[0]
-        # return self.get_best_move(valid_moves)
+
+    def alphabeta(self, node, depth, alpha, beta, maximizingPlayer, board, color):
+        if depth == 0: # or node.isTerminal: TODO: Pensar sobre a necessidade disso depois
+            return REGIONS.get_move_value(node.move)
+        if maximizingPlayer:
+            v = -float("inf")
+            valid_moves = board.valid_moves(color)
+            if len(valid_moves) is 0:
+                print 'terminal found on depth: ' + str(depth)
+            for move in valid_moves:
+                new_board = board.get_clone()
+                new_board.play(move, color)
+                child = Node(move, new_board, node)
+            # for child in node.children:
+                v = max(v, self.alphabeta(child, depth-1, alpha, beta, 0, new_board, self._opponent(color)))
+                alpha = max(alpha, v)
+                if beta <= alpha:
+                    break #(* beta cut-off *)
+            node.set_value(v)
+            return v
+        else:
+            v = float("inf")
+            valid_moves = board.valid_moves(color)
+            if len(valid_moves) is 0:
+                print 'terminal found on depth: ' + str(depth)
+            for move in valid_moves:
+                new_board = board.get_clone()
+                new_board.play(move, color)
+                child = Node(move, new_board, node)
+            # for child in node.children:
+                v = min(v, self.alphabeta(child, depth-1, alpha, beta, 1, new_board, self._opponent(color)))
+                beta = min(beta, v)
+                if beta <= alpha:
+                    break #(* alpha cut-off *)
+            node.set_value(v)
+            return v
 
     def calculate_score_diff(self, board):
         board_score = board.score()
