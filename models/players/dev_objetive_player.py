@@ -2,12 +2,12 @@ from apoio.minimax_node import Node
 from apoio.minimax_tree import Tree
 from apoio.regions import Regions
 
-MAX_DEPTH = 4
+MAX_DEPTH = 5
 REGIONS = Regions()
 NEXT_NODE = None
 
 
-class MinimaxPlayer:
+class ObjetivePlayer:
 
     def __init__(self, color):
         self.color = color
@@ -27,16 +27,17 @@ class MinimaxPlayer:
 
     def alphabeta(self, node, depth, alpha, beta, maximizingPlayer, board, color):
         if depth == 0: # or node.isTerminal: TODO: Pensar sobre a necessidade disso depois
-            if maximizingPlayer:
-                return -(REGIONS.get_move_value(node.move))
-            return REGIONS.get_move_value(node.move)
+            # if maximizingPlayer:
+            if self.color == '@':
+                return node.board.score()[1]
+            return node.board.score()[0]
         if maximizingPlayer:
             v = float("-inf")
             valid_moves = board.valid_moves(color)
             if len(valid_moves) is 0:
-                if maximizingPlayer:
-                    return -(REGIONS.get_move_value(node.move))
-                return REGIONS.get_move_value(node.move)
+                if self.color == '@':
+                    return node.board.score()[1]
+                return node.board.score()[0]
             for move in valid_moves:
                 new_board = board.get_clone()
                 new_board.play(move, color)
@@ -52,9 +53,9 @@ class MinimaxPlayer:
             v = float("inf")
             valid_moves = board.valid_moves(color)
             if len(valid_moves) is 0:
-                if maximizingPlayer:
-                    return -(REGIONS.get_move_value(node.move))
-                return REGIONS.get_move_value(node.move)
+                if self.color == '@':
+                    return node.board.score()[1]
+                return node.board.score()[0]
             for move in valid_moves:
                 new_board = board.get_clone()
                 new_board.play(move, color)
