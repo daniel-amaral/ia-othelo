@@ -1,8 +1,9 @@
 from apoio.minimax_node import Node
 from apoio.minimax_tree import Tree
 from apoio.regions import Regions
+from models.move import Move
 
-MAX_DEPTH = 5
+MAX_DEPTH = 10
 REGIONS = Regions()
 NEXT_NODE = None
 
@@ -15,9 +16,17 @@ class ObjetivePlayer:
     def play(self, board):
         root_node = Node(None, board, None)
         value = self.alphabeta(root_node, MAX_DEPTH, -float("inf"), float("inf"), 1, board, self.color)
-        next_move = root_node.get_child_with_value(value)
-        if isinstance(next_move, Node):
-            return next_move.move
+        next_childs = root_node.get_childs_with_value(value)
+        next_moves = []
+        for x in next_childs:
+            next_moves.append(x.move)
+
+        next_move = self.__slice_best_moves_in_list(next_moves)
+
+        if len(next_move) > 0:
+            next_move = next_move[0]
+            if isinstance(next_move, Move):
+                return next_move
 
         valid_moves = list(set(board.valid_moves(self.color)))
         next_move = self.__slice_best_moves_in_list(valid_moves)

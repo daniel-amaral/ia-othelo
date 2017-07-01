@@ -52,3 +52,12 @@ class Node:
                 if child.value is value:
                     return child
         return None
+
+    def get_childs_with_value(self, value):
+        childs = []
+        for child in self.children:
+            if child.value is not None:
+                if child.value is value:
+                    childs.append(child)
+        return childs
+        return None
