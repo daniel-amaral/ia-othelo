@@ -2,7 +2,7 @@ from apoio.minimax_node import Node
 from apoio.minimax_tree import Tree
 from apoio.regions import Regions
 
-MAX_DEPTH = 3
+MAX_DEPTH = 5
 REGIONS = Regions()
 NEXT_NODE = None
 
@@ -14,11 +14,11 @@ class MinimaxPlayer:
 
     def play(self, board):
         root_node = Node(None, board, None)
-        valid_moves = list(set(board.valid_moves(self.color)))
-        print '#valid moves: ' + str(len(valid_moves))
+        valid_moves = self.optimizeValidMoves(board.valid_moves(self.color))
+        # print '#valid moves: ' + str(len(valid_moves))
         minimax_tree = self.build_minimax_tree(root_node, board)
         tree_depth = minimax_tree.depth
-        print 'tree depth: ' + str(tree_depth)
+        # print 'tree depth: ' + str(tree_depth)
         minimax_value = self.minimax(root_node, tree_depth, True)
         next_move = root_node.get_child_with_value(minimax_value)
         # print 'minimax value: ' + str(minimax)
@@ -27,6 +27,21 @@ class MinimaxPlayer:
             return minimax.move
         return valid_moves[0]
         # return self.get_best_move(valid_moves)
+
+    def optimizeValidMoves(self, valid_moves):
+        optimized_valid_moves = []
+
+        for valid_move in valid_moves:
+            isInside = False
+            for optimized_valid_move in optimized_valid_moves:
+                if valid_move.x == optimized_valid_move.x and valid_move.y == optimized_valid_move.y:
+                    isInside = True
+                    break
+            if isInside:
+                continue
+            optimized_valid_moves.append(valid_move)
+
+        return optimized_valid_moves
 
     def calculate_score_diff(self, board):
         board_score = board.score()
@@ -48,9 +63,9 @@ class MinimaxPlayer:
         if depth > MAX_DEPTH:
             return
         local_depth = depth + 1
-        valid_moves = board.valid_moves(color)
-        if len(valid_moves) is 0:
-            print 'terminal found on depth: ' + str(depth)
+        valid_moves = self.optimizeValidMoves(board.valid_moves(color))
+        # if len(valid_moves) is 0:
+        #     print 'terminal found on depth: ' + str(depth)
         best_moves = self.__slice_best_moves_in_list(valid_moves)
         for move in best_moves:
             new_board = board.get_clone()

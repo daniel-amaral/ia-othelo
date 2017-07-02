@@ -9,8 +9,23 @@ class RegionsPlayer:
         self.color = color
 
     def play(self, board):
-        valid_moves = board.valid_moves(self.color)
+        valid_moves = self.optimizeValidMoves(board.valid_moves(self.color))
         return self.get_best_move(valid_moves)
+
+    def optimizeValidMoves(self, valid_moves):
+        optimized_valid_moves = []
+
+        for valid_move in valid_moves:
+            isInside = False
+            for optimized_valid_move in optimized_valid_moves:
+                if valid_move.x == optimized_valid_move.x and valid_move.y == optimized_valid_move.y:
+                    isInside = True
+                    break
+            if isInside:
+                continue
+            optimized_valid_moves.append(valid_move)
+
+        return optimized_valid_moves
 
     def get_best_move(self, valid_moves):
         # Regions priority: 5 > 3 > 1 > 2 > 4
