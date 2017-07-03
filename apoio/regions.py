@@ -54,11 +54,11 @@ class Regions:
     def get_move_value(self, move):
         # Regions priority: 5 > 3 > 1 > 2 > 4
         if move in self.get_region(5):
-            return 6500
+            return 10
         if move in self.get_region(3):
-            return 400
+            return 5
         if move in self.get_region(1):
-            return 20
+            return 2
         if move in self.get_region(2):
             return 1
         return 0
